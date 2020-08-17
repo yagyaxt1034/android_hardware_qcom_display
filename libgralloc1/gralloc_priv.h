@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2018, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
  * Not a Contribution
  *
  * Copyright (C) 2008 The Android Open Source Project
@@ -22,13 +22,6 @@
 
 #include <unistd.h>
 #include "gr_priv_handle.h"
-
-#define GRALLOC_PROP_PREFIX  "vendor.gralloc."
-#define GRALLOC_PROP(prop_name) GRALLOC_PROP_PREFIX prop_name
-
-#define DISABLE_UBWC_PROP                    GRALLOC_PROP("disable_ubwc")
-#define ENABLE_FB_UBWC_PROP                  GRALLOC_PROP("enable_fb_ubwc")
-#define MAP_FB_MEMORY_PROP                   GRALLOC_PROP("map_fb_memory")
 
 #define ROUND_UP_PAGESIZE(x) roundUpToPageSize(x)
 inline int roundUpToPageSize(int x) {
@@ -65,10 +58,10 @@ inline int roundUpToPageSize(int x) {
 /* Consumer flags */
 /* TODO(user): Fix when producer and consumer flags are actually separated */
 /* This flag is set for WFD usecase */
-#define GRALLOC1_CONSUMER_USAGE_PRIVATE_WFD            (UINT32_C(1) << 21)
+#define GRALLOC1_CONSUMER_USAGE_PRIVATE_WFD            0x00200000
 
 /* This flag is used for SECURE display usecase */
-#define GRALLOC1_CONSUMER_USAGE_PRIVATE_SECURE_DISPLAY (UINT32_C(1) << 31)
+#define GRALLOC1_CONSUMER_USAGE_PRIVATE_SECURE_DISPLAY 0x00800000
 
 /* Buffer content should be displayed on a primary display only */
 #define GRALLOC1_CONSUMER_USAGE_PRIVATE_INTERNAL_ONLY  0x04000000
@@ -84,17 +77,9 @@ inline int roundUpToPageSize(int x) {
 #define GRALLOC_USAGE_PRIVATE_IOMMU_HEAP GRALLOC1_PRODUCER_USAGE_PRIVATE_IOMMU_HEAP
 #define GRALLOC_USAGE_PRIVATE_WFD GRALLOC1_CONSUMER_USAGE_PRIVATE_WFD
 #define GRALLOC_USAGE_PRIVATE_CAMERA_HEAP GRALLOC1_PRODUCER_USAGE_PRIVATE_CAMERA_HEAP
-#define GRALLOC_USAGE_PRIVATE_SECURE_DISPLAY GRALLOC1_CONSUMER_USAGE_PRIVATE_SECURE_DISPLAY
 #define GRALLOC_USAGE_PRIVATE_MM_HEAP 0x0
 
-/* HARDWAREBUFFER flags used by GPU to check secure  secure context support */
-#define GRALLOC1_PRODUCER_USAGE_GPU_SAMPLED_IMAGE                   1UL << 8
-/* The buffer will be used as a shader storage or uniform buffer object. */
-#define GRALLOC1_PRODUCER_USAGE_GPU_DATA_BUFFER                     1UL << 24
-/* The buffer will be used as a cube map texture. */
-#define GRALLOC1_PRODUCER_USAGE_GPU_CUBE_MAP                        1UL << 25
-/* The buffer contains a complete mipmap hierarchy. */
-#define GRALLOC1_PRODUCER_USAGE_GPU_MIPMAP_COMPLETE                 1UL << 26
+
 
 // for PERFORM API :
 #define GRALLOC_MODULE_PERFORM_CREATE_HANDLE_FROM_BUFFER 1
@@ -112,7 +97,6 @@ inline int roundUpToPageSize(int x) {
 #define GRALLOC_MODULE_PERFORM_SET_SINGLE_BUFFER_MODE 13
 #define GRALLOC1_MODULE_PERFORM_GET_BUFFER_SIZE_AND_DIMENSIONS 14
 #define GRALLOC1_MODULE_PERFORM_ALLOCATE_BUFFER 15
-#define GRALLOC1_MODULE_PERFORM_GET_INTERLACE_FLAG 16
 
 // OEM specific HAL formats
 #define HAL_PIXEL_FORMAT_RGBA_5551 6
@@ -143,10 +127,6 @@ inline int roundUpToPageSize(int x) {
 #define HAL_PIXEL_FORMAT_BGRX_1010102 0x11C
 #define HAL_PIXEL_FORMAT_XBGR_2101010 0x11D
 #define HAL_PIXEL_FORMAT_YCbCr_420_P010 0x11F
-#define HAL_PIXEL_FORMAT_YCbCr_420_P010_UBWC 0x124
-
-#define HAL_PIXEL_FORMAT_CbYCrY_422_I            0x120
-#define HAL_PIXEL_FORMAT_BGR_888                 0x121
 
 #define HAL_PIXEL_FORMAT_INTERLACE 0x180
 
