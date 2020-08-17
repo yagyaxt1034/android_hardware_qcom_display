@@ -37,6 +37,7 @@ namespace gralloc1 {
 // Adreno Pixel Formats
 typedef enum {
   ADRENO_PIXELFORMAT_UNKNOWN = 0,
+  ADRENO_PIXELFORMAT_R16G16B16A16_FLOAT = 10,
   ADRENO_PIXELFORMAT_R10G10B10A2_UNORM = 24,  // Vertex, Normalized GL_UNSIGNED_INT_10_10_10_2_OES
   ADRENO_PIXELFORMAT_R8G8B8A8 = 28,
   ADRENO_PIXELFORMAT_R8G8B8A8_SRGB = 29,
@@ -46,6 +47,7 @@ typedef enum {
   ADRENO_PIXELFORMAT_B8G8R8A8_SRGB = 91,
   ADRENO_PIXELFORMAT_B8G8R8X8_SRGB = 93,
   ADRENO_PIXELFORMAT_NV12 = 103,
+  ADRENO_PIXELFORMAT_P010 = 104,
   ADRENO_PIXELFORMAT_YUY2 = 107,
   ADRENO_PIXELFORMAT_B4G4R4A4 = 115,
   ADRENO_PIXELFORMAT_NV12_EXT = 506,       // NV12 with non-std alignment and offsets
@@ -65,16 +67,11 @@ typedef enum {
   ADRENO_PIXELFORMAT_NV21 = 619,
   ADRENO_PIXELFORMAT_Y8U8V8A8 = 620,  // YUV 4:4:4 packed (1 plane)
   ADRENO_PIXELFORMAT_Y8 = 625,        //  Single 8-bit luma only channel YUV format
+  ADRENO_PIXELFORMAT_TP10 = 654,      // YUV 4:2:0 planar 10 bits/comp (2 planes)
 } ADRENOPIXELFORMAT;
 
 class AdrenoMemInfo {
  public:
-  AdrenoMemInfo();
-
-  ~AdrenoMemInfo();
-
-  bool Init();
-
   /*
    * Function to compute aligned width and aligned height based on
    * width, height, format and usage flags.
@@ -122,7 +119,18 @@ class AdrenoMemInfo {
    */
   ADRENOPIXELFORMAT GetGpuPixelFormat(int hal_format);
 
+   /*
+   * Function to query whether GPU supports secureContext
+   * @return > 1 : supported
+   *           0 : not supported
+   */
+  bool isSecureContextSupportedByGpu();
+
+  static AdrenoMemInfo *GetInstance();
+
  private:
+  AdrenoMemInfo();
+  ~AdrenoMemInfo();
   // link(s)to adreno surface padding library.
   int (*LINK_adreno_compute_padding)(int width, int bpp, int surface_tile_height,
                                      int screen_tile_height, int padding_threshold) = NULL;
@@ -135,10 +143,13 @@ class AdrenoMemInfo {
       int *aligned_w, int *aligned_h, int *bpp) = NULL;
   int (*LINK_adreno_isUBWCSupportedByGpu)(ADRENOPIXELFORMAT format) = NULL;
   unsigned int (*LINK_adreno_get_gpu_pixel_alignment)() = NULL;
+  int (*LINK_adreno_isSecureContextSupportedByGpu) () = NULL;
 
   bool gfx_ubwc_disable_ = false;
   bool map_fb_ = false;
   void *libadreno_utils_ = NULL;
+
+  static AdrenoMemInfo *s_instance;
 };
 
 }  // namespace gralloc1
